@@ -6,8 +6,8 @@ provider "aws" {
 
 terraform {
   backend "s3" {
-    bucket = var.s3_tfstate_bucket
-    key    = var.s3_backup_path
-    region = var.aws_region
+    bucket = "tw-tfstate-files"
+    key    = "hv-test/terraform.tfstate"
+    region = "us-east-1"
   }
 }
