@@ -15,12 +15,35 @@ variable "cluster_name" {
   description = "The name of AWS ECS cluster"
 }
 
-variable "service_name" {
+# App 1
+variable "service_name_1" {
   type        = string
   description = "The name of the default service to be created"
 }
 
-variable "ecr_repo" {
+variable "ecr_repo_1" {
+  type        = string
+  description = "URL for the docker image which will be used, hosted on ECR"
+}
+
+# App 2
+variable "service_name_2" {
+  type        = string
+  description = "The name of the default service to be created"
+}
+
+variable "ecr_repo_2" {
+  type        = string
+  description = "URL for the docker image which will be used, hosted on ECR"
+}
+
+# App 3
+variable "service_name_3" {
+  type        = string
+  description = "The name of the default service to be created"
+}
+
+variable "ecr_repo_3" {
   type        = string
   description = "URL for the docker image which will be used, hosted on ECR"
 }
