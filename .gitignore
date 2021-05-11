@@ -6,9 +6,6 @@
 # Module directory
 .terraform/
 
-# Terraform variables
-*.tfvars
-
 # Extra
 .terraform.lock*
 terraform*.zip
