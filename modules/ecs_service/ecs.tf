@@ -47,5 +47,5 @@ resource "aws_ecs_service" "ecs_service" {
     container_port   = var.container_port
   }
 
-  depends_on = [var.redirect_https_listener, var.https_listener, var.role_execution_attachment]
+  depends_on = [var.redirect_https_listener, var.https_listener]
 }

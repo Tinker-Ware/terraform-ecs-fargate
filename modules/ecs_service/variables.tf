@@ -71,9 +71,9 @@ variable "public_subnets" {
   description = "Arrray of IDs from the public subnets"
 }
 
-variable "role_execution_attachment" {
-  description = "IAM role execution attachment resource"
-}
+# variable "role_execution_attachment" {
+#   description = "IAM role execution attachment resource"
+# }
 
 
 
