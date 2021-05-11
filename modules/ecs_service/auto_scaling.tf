@@ -1,6 +1,6 @@
-resource "aws_appautoscaling_target" "autoscaling_target_backoffice" {
+resource "aws_appautoscaling_target" "autoscaling_target_service" {
   service_namespace  = "ecs"
-  resource_id        = "service/${var.cluster_name}/${var.service_name_2}-service"
+  resource_id        = "service/${var.cluster_name}/${var.service_name}-service"
   scalable_dimension = "ecs:service:DesiredCount"
   min_capacity       = 1
   max_capacity       = 2
@@ -8,10 +8,10 @@ resource "aws_appautoscaling_target" "autoscaling_target_backoffice" {
   depends_on = [aws_ecs_service.backoffice_service]
 }
 
-resource "aws_appautoscaling_policy" "backoffice_up" {
-  name               = "webservice_scale_up"
+resource "aws_appautoscaling_policy" "service_up" {
+  name               = "service-scale-up"
   service_namespace  = "ecs"
-  resource_id        = "service/${var.cluster_name}/${var.service_name_2}-service"
+  resource_id        = "service/${var.cluster_name}/${var.service_name}-service"
   scalable_dimension = "ecs:service:DesiredCount"
 
   step_scaling_policy_configuration {
@@ -25,13 +25,13 @@ resource "aws_appautoscaling_policy" "backoffice_up" {
     }
   }
 
-  depends_on = [aws_appautoscaling_target.autoscaling_target_backoffice]
+  depends_on = [aws_appautoscaling_target.autoscaling_target_service]
 }
 
-resource "aws_appautoscaling_policy" "backoffice_down" {
-  name               = "webservice_scale_down"
+resource "aws_appautoscaling_policy" "service_down" {
+  name               = "service_scale_down"
   service_namespace  = "ecs"
-  resource_id        = "service/${var.cluster_name}/${var.service_name_2}-service"
+  resource_id        = "service/${var.cluster_name}/${var.service_name}-service"
   scalable_dimension = "ecs:service:DesiredCount"
 
   step_scaling_policy_configuration {
@@ -45,11 +45,11 @@ resource "aws_appautoscaling_policy" "backoffice_down" {
     }
   }
 
-  depends_on = [aws_appautoscaling_target.autoscaling_target_backoffice]
+  depends_on = [aws_appautoscaling_target.autoscaling_target_service]
 }
 
 # CPU
-resource "aws_cloudwatch_metric_alarm" "backoffice_cpu_high" {
+resource "aws_cloudwatch_metric_alarm" "service_cpu_high" {
   alarm_name          = "80-cpu-3min-avg-scaleout"
   comparison_operator = "GreaterThanOrEqualToThreshold"
   evaluation_periods  = "3"
@@ -60,14 +60,14 @@ resource "aws_cloudwatch_metric_alarm" "backoffice_cpu_high" {
   threshold           = "80"
 
   dimensions = {
-    ClusterName = aws_ecs_cluster.main.name
-    ServiceName = aws_ecs_service.backoffice_service.name
+    ClusterName = var.aws_cluster_name
+    ServiceName = var.aws_service_name
   }
 
-  alarm_actions = [aws_appautoscaling_policy.backoffice_up.arn]
+  alarm_actions = [aws_appautoscaling_policy.service_up.arn]
 }
 
-resource "aws_cloudwatch_metric_alarm" "backoffice_cpu_low" {
+resource "aws_cloudwatch_metric_alarm" "service_cpu_low" {
   alarm_name          = "40-cpu-3min-avg-scalein"
   comparison_operator = "LessThanOrEqualToThreshold"
   evaluation_periods  = "3"
@@ -78,11 +78,11 @@ resource "aws_cloudwatch_metric_alarm" "backoffice_cpu_low" {
   threshold           = "40"
 
   dimensions = {
-    ClusterName = aws_ecs_cluster.main.name
-    ServiceName = aws_ecs_service.backoffice_service.name
+    ClusterName = var.aws_cluster_name
+    ServiceName = var.aws_service_name
   }
 
-  alarm_actions = [aws_appautoscaling_policy.backoffice_down.arn]
+  alarm_actions = [aws_appautoscaling_policy.service_down.arn]
 }
 
 
@@ -98,14 +98,14 @@ resource "aws_cloudwatch_metric_alarm" "backoffice_ram_high" {
   threshold           = "80"
 
   dimensions = {
-    ClusterName = aws_ecs_cluster.main.name
-    ServiceName = aws_ecs_service.backoffice_service.name
+    ClusterName = aws_cluster_name
+    ServiceName = aws_service_name
   }
 
-  alarm_actions = [aws_appautoscaling_policy.backoffice_up.arn]
+  alarm_actions = [aws_appautoscaling_policy.service_up.arn]
 }
 
-resource "aws_cloudwatch_metric_alarm" "backoffice_ram_low" {
+resource "aws_cloudwatch_metric_alarm" "service_ram_low" {
   alarm_name          = "40-ram-3min-avg-scalein"
   comparison_operator = "LessThanOrEqualToThreshold"
   evaluation_periods  = "3"
@@ -116,9 +116,9 @@ resource "aws_cloudwatch_metric_alarm" "backoffice_ram_low" {
   threshold           = "40"
 
   dimensions = {
-    ClusterName = aws_ecs_cluster.main.name
-    ServiceName = aws_ecs_service.backoffice_service.name
+    ClusterName = aws_cluster_name
+    ServiceName = aws_service_name
   }
 
-  alarm_actions = [aws_appautoscaling_policy.backoffice_down.arn]
+  alarm_actions = [aws_appautoscaling_policy.service_down.arn]
 }
