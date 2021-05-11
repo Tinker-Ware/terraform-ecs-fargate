@@ -10,7 +10,7 @@ resource "aws_alb" "main" {
   security_groups = [aws_security_group.lb.id]
 }
 
-resource "aws_alb_listener" "redirect_https" {
+resource "aws_alb_listener" "redirect_https_listener" {
   load_balancer_arn = aws_alb.main.arn
   port              = "80"
   protocol          = "HTTP"
@@ -27,16 +27,16 @@ resource "aws_alb_listener" "redirect_https" {
 }
 
 # Redirect all traffic from the ALB to the target groups
-resource "aws_alb_listener" "hv_lb_https_listener" {
-  load_balancer_arn = aws_alb.main.id
+resource "aws_alb_listener" "https_listener" {
+  load_balancer_arn = aws_alb.main.arn
   port              = 443
   protocol          = "HTTPS"
   certificate_arn   = data.aws_acm_certificate.hv_cert.arn
 
   default_action {
-    target_group_arn = aws_alb_target_group.frontoffice_tg.id
+    target_group_arn = module.ecs_service_1.service_target_group
     type             = "forward"
   }
 
-  depends_on = [ var.frontoffice_tg.arn ]
+  depends_on = [ module.ecs_service_1.service_target_group ]
 }

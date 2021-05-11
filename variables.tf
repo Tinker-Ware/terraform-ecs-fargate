@@ -10,49 +10,37 @@ variable "aws_region" {
   default     = "us-east-1"
 }
 
+variable "domain" {
+  type        = string
+  description = "Domain name for ACM certificate and Route 53 hosted zone"
+}
+
 variable "cluster_name" {
   type        = string
   description = "The name of AWS ECS cluster"
 }
 
-# App 1
-variable "service_name_1" {
-  type        = string
-  description = "The name of the default service to be created"
+# ------------------------------------
+# ECS Services
+# ------------------------------------
+variable "subdomains" {
+  type        = list
+  description = "List of subdomains for Route 53 records"
 }
 
-variable "ecr_repo_1" {
-  type        = string
-  description = "URL for the docker image which will be used, hosted on ECR"
+variable "service_names" {
+  type        = list
+  description = "List of names for the ECS services to be created"
 }
 
-# App 2
-variable "service_name_2" {
-  type        = string
-  description = "The name of the default service to be created"
+variable "ecr_repos" {
+  type        = list
+  description = "List of URLs for the docker images which will be used, hosted on ECR"
 }
 
-variable "ecr_repo_2" {
-  type        = string
-  description = "URL for the docker image which will be used, hosted on ECR"
-}
-
-# App 3
-variable "service_name_3" {
-  type        = string
-  description = "The name of the default service to be created"
-}
-
-variable "ecr_repo_3" {
-  type        = string
-  description = "URL for the docker image which will be used, hosted on ECR"
-}
-
-variable "domain" {
-  type        = string
-  description = "Domain name for ACM certificate"
-}
-
+# ------------------------------------
+# DB
+# ------------------------------------
 variable "db_version" {
   type        = string
   description = "Engine version for MySQL"
@@ -71,17 +59,4 @@ variable "db_password" {
 variable "db_port" {
   type = number
   description = "Port on which the DB accepts connections"
-}
-
-
-variable "s3_tfstate_bucket" {
-  type = string
-  description = "Name of S3 bucket to store .tfstate backups on"
-  default = "tw-tfstate-files"
-}
-
-variable "s3_backup_path" {
-  type = string
-  description = "Path inside of S3 bucket to store .tfstate backups on"
-  default = "hv-test/terraform.tfstate"
 }
