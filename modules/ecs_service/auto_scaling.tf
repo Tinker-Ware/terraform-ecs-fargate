@@ -5,7 +5,7 @@ resource "aws_appautoscaling_target" "autoscaling_target_service" {
   min_capacity       = 1
   max_capacity       = 2
 
-  depends_on = [aws_ecs_service.backoffice_service]
+  depends_on = [aws_ecs_service.ecs_service]
 }
 
 resource "aws_appautoscaling_policy" "service_up" {
@@ -98,8 +98,8 @@ resource "aws_cloudwatch_metric_alarm" "backoffice_ram_high" {
   threshold           = "80"
 
   dimensions = {
-    ClusterName = aws_cluster_name
-    ServiceName = aws_service_name
+    ClusterName = var.aws_cluster_name
+    ServiceName = var.aws_service_name
   }
 
   alarm_actions = [aws_appautoscaling_policy.service_up.arn]
@@ -116,8 +116,8 @@ resource "aws_cloudwatch_metric_alarm" "service_ram_low" {
   threshold           = "40"
 
   dimensions = {
-    ClusterName = aws_cluster_name
-    ServiceName = aws_service_name
+    ClusterName = var.aws_cluster_name
+    ServiceName = var.aws_service_name
   }
 
   alarm_actions = [aws_appautoscaling_policy.service_down.arn]
