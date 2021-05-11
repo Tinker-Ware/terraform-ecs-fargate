@@ -94,10 +94,14 @@ variable "https_listener" {
 
 variable "target_group_port" {
   description = "Port for the target group"
+  type        = number
+  default     = 80
 }
 
 variable "target_group_protocol" {
   description = "Protocol according to target group port selected"
+  type        = string
+  default     = "HTTP"
 }
 
 variable "target_type" {
