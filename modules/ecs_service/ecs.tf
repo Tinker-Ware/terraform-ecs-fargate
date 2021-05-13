@@ -14,7 +14,7 @@ resource "aws_ecs_task_definition" "service_td" {
         "options" = {
           "awslogs-region" = var.aws_region,
           "awslogs-group" = aws_cloudwatch_log_group.service_log_group.name,
-          "awslogs-stream-prefix" = "${var.service_name}_ls"
+          "awslogs-stream-prefix" = aws_cloudwatch_log_stream.service_log_stream.name
         }
       },
       "portMappings" = [

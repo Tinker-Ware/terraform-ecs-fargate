@@ -61,7 +61,7 @@ resource "aws_cloudwatch_metric_alarm" "service_cpu_high" {
 
   dimensions = {
     ClusterName = var.aws_cluster_name
-    ServiceName = var.aws_service_name
+    ServiceName = aws_ecs_service.ecs_service.name
   }
 
   alarm_actions = [aws_appautoscaling_policy.service_up.arn]
@@ -79,7 +79,7 @@ resource "aws_cloudwatch_metric_alarm" "service_cpu_low" {
 
   dimensions = {
     ClusterName = var.aws_cluster_name
-    ServiceName = var.aws_service_name
+    ServiceName = aws_ecs_service.ecs_service.name
   }
 
   alarm_actions = [aws_appautoscaling_policy.service_down.arn]
@@ -99,7 +99,7 @@ resource "aws_cloudwatch_metric_alarm" "backoffice_ram_high" {
 
   dimensions = {
     ClusterName = var.aws_cluster_name
-    ServiceName = var.aws_service_name
+    ServiceName = aws_ecs_service.ecs_service.name
   }
 
   alarm_actions = [aws_appautoscaling_policy.service_up.arn]
@@ -117,7 +117,7 @@ resource "aws_cloudwatch_metric_alarm" "service_ram_low" {
 
   dimensions = {
     ClusterName = var.aws_cluster_name
-    ServiceName = var.aws_service_name
+    ServiceName = aws_ecs_service.ecs_service.name
   }
 
   alarm_actions = [aws_appautoscaling_policy.service_down.arn]

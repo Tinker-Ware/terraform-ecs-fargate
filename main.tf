@@ -24,11 +24,11 @@ data "aws_route53_zone" "selected" {
 
 # Module instances
 module "ecs_service_1" {
-  source = "modules/ecs_service"
+  source = "./modules/ecs_service"
 
   domain = var.domain
   subdomain = var.subdomains[0]
-
+  service_name = var.service_names[0]
   ecr_repo = var.ecr_repos[0]
   cluster_name = var.cluster_name
   aws_cluster_id = aws_ecs_cluster.main.id
@@ -38,10 +38,18 @@ module "ecs_service_1" {
 
   vpc_id = aws_vpc.main.id
   alb_listener_arn = aws_alb_listener.https_listener.arn
+  https_listener = aws_alb_listener.https_listener
+  create_redirect_rule = true
+  create_forward_rule = false
+  rule_priority = 1
+  aws_cluster_name = data.aws_ecs_cluster.main.name
+  hosted_zone_id = data.aws_route53_zone.selected.zone_id
+  alb_dns_name = aws_alb.main.dns_name
+  alb_zone_id = aws_alb.main.zone_id
 
   depends_on = [
-    aws_vpc.main.id,
-    aws_ecs_cluster.main.id,
+    aws_vpc.main,
+    aws_ecs_cluster.main,
     aws_iam_role.ecs_task_execution_role,
     aws_iam_role_policy_attachment.ecs_task_execution_role_attachment,
     aws_alb_listener.https_listener

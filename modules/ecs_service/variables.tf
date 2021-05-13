@@ -80,7 +80,7 @@ variable "public_subnets" {
 # -------------------------------------------------------------------
 # Load balancer variables
 # -------------------------------------------------------------------
-variable "vcp_id" {
+variable "vpc_id" {
   description = "ID of the VPC the target group will be deployed in"
 }
 
@@ -132,9 +132,9 @@ variable "aws_cluster_name" {
   description = "Name attribute of the ECS cluster in AWS"
 }
 
-variable "aws_service_name" {
-  description = "Name attribute of the ECS service in AWS"
-}
+# variable "aws_service_name" {
+#   description = "Name attribute of the ECS service in AWS"
+# }
 
 
 # -------------------------------------------------------------------
