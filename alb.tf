@@ -4,8 +4,7 @@ data "aws_acm_certificate" "hv_cert" {
 }
 
 resource "aws_alb" "main" {
-  name            = "healthyvita-lb"
-  # subnets         = aws_subnet.public.*.id
+  name            = "${var.organization_name}-lb"
   subnets         = [aws_subnet.public_1[0].id, aws_subnet.public_2[0].id]
   security_groups = [aws_security_group.lb.id]
 }
@@ -115,7 +114,7 @@ resource "aws_lb_listener_rule" "frontoffice_routing_rule" {
 
   condition {
     host_header {
-      values = ["front.${var.domain}"]
+      values = ["${var.subdomain_1}.${var.domain}"]
     }
   }
 
@@ -133,7 +132,7 @@ resource "aws_lb_listener_rule" "backoffice_routing_rule" {
 
   condition {
     host_header {
-      values = ["back.${var.domain}"]
+      values = ["${var.subdomain_2}.${var.domain}"]
     }
   }
 
@@ -151,7 +150,7 @@ resource "aws_lb_listener_rule" "webservice_routing_rule" {
 
   condition {
     host_header {
-      values = ["api.${var.domain}"]
+      values = ["${var.subdomain_3}.${var.domain}"]
     }
   }
 

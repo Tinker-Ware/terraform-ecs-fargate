@@ -1,8 +1,6 @@
-# security.tf
-
-# ALB Security Group: Edit to restrict access to the application
+# ALB Security Group: Manages access to the application
 resource "aws_security_group" "lb" {
-  name        = "healthyvita-lb-sg"
+  name        = "${var.organization_name}-lb-sg"
   vpc_id      = aws_vpc.main.id
 
   ingress {
