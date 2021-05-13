@@ -1,6 +1,6 @@
 # ALB Security Group: Manages access to the application
 resource "aws_security_group" "lb" {
-  name        = "${var.organization_name}-lb-sg"
+  name        = "${var.cluster_name}-lb-sg"
   vpc_id      = aws_vpc.main.id
 
   ingress {

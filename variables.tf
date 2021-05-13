@@ -10,11 +10,6 @@ variable "aws_region" {
   default     = "us-east-1"
 }
 
-variable "organization_name" {
-  type        = string
-  description = "The name of organization, to use for the load balancer and its security group"
-}
-
 
 variable "cluster_name" {
   type        = string

@@ -4,7 +4,7 @@ data "aws_acm_certificate" "hv_cert" {
 }
 
 resource "aws_alb" "main" {
-  name            = "${var.organization_name}-lb"
+  name            = "${var.cluster_name}-lb"
   subnets         = [aws_subnet.public_1[0].id, aws_subnet.public_2[0].id]
   security_groups = [aws_security_group.lb.id]
 }
