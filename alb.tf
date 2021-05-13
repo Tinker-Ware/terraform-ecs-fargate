@@ -96,7 +96,8 @@ resource "aws_alb_listener" "hv_lb_https_listener" {
 }
 
 
-resource "aws_lb_listener_rule" "frontoffice_routing_rule" {
+resource "aws_lb_listener_rule" "frontoffice_redirect_routing_rule" {
+  count = var.create_front_redirect ? 1 : 0
   listener_arn = aws_alb_listener.hv_lb_https_listener.arn
   priority     = 1
 
@@ -120,6 +121,26 @@ resource "aws_lb_listener_rule" "frontoffice_routing_rule" {
 
   depends_on = [aws_alb_listener.hv_lb_https_listener]
 }
+
+resource "aws_lb_listener_rule" "frontoffice_forward_routing_rule" {
+  count = !var.create_front_redirect ? 1 : 0
+  listener_arn = aws_alb_listener.hv_lb_https_listener.arn
+  priority     = 1
+
+  action {
+    type             = "forward"
+    target_group_arn = aws_alb_target_group.frontoffice_tg.arn
+  }
+
+  condition {
+    host_header {
+      values = ["${var.subdomain_1}.${var.domain}"]
+    }
+  }
+
+  depends_on = [aws_alb_listener.hv_lb_https_listener]
+}
+
 
 resource "aws_lb_listener_rule" "backoffice_routing_rule" {
   listener_arn = aws_alb_listener.hv_lb_https_listener.arn

@@ -32,6 +32,11 @@ variable "subdomain_1" {
   description = "Subdomain to use for the route 53 record and load balancer listener rule"
 }
 
+variable "create_front_redirect" {
+  type        = bool
+  description = "Condition to evaluate whether create a redirect listener rule or forward listener rule for frontoffice"
+}
+
 
 # App 2
 variable "service_name_2" {
