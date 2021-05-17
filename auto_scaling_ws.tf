@@ -9,7 +9,7 @@ resource "aws_appautoscaling_target" "autoscaling_target_webservice" {
 }
 
 resource "aws_appautoscaling_policy" "webservice_up" {
-  name               = "webservice_scale_up"
+  name               = "${var.service_name_3}_scale_up"
   service_namespace  = "ecs"
   resource_id        = "service/${var.cluster_name}/${var.service_name_3}-service"
   scalable_dimension = "ecs:service:DesiredCount"
@@ -29,7 +29,7 @@ resource "aws_appautoscaling_policy" "webservice_up" {
 }
 
 resource "aws_appautoscaling_policy" "webservice_down" {
-  name               = "webservice_scale_down"
+  name               = "${var.service_name_3}_scale_down"
   service_namespace  = "ecs"
   resource_id        = "service/${var.cluster_name}/${var.service_name_3}-service"
   scalable_dimension = "ecs:service:DesiredCount"

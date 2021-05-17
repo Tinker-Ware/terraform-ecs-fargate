@@ -18,7 +18,7 @@ resource "aws_ecs_task_definition" "frontoffice_td" {
         "options" = {
           "awslogs-region" = var.aws_region,
           "awslogs-group" = aws_cloudwatch_log_group.webservice_log_group_1.name,
-          "awslogs-stream-prefix" = "hv-ecs"
+          "awslogs-stream-prefix" = aws_cloudwatch_log_stream.myapp_log_stream_1.name
         }
       },
       "portMappings" = [
@@ -40,7 +40,6 @@ resource "aws_ecs_service" "frontoffice_service" {
 
   network_configuration {
     security_groups  = [aws_security_group.ecs_sg.id]
-    # subnets         = aws_subnet.public.*.id
     subnets         = [aws_subnet.public_1[0].id, aws_subnet.public_2[0].id]
     assign_public_ip = true
   }
@@ -72,7 +71,7 @@ resource "aws_ecs_task_definition" "backoffice_td" {
         "options" = {
           "awslogs-region" = var.aws_region,
           "awslogs-group" = aws_cloudwatch_log_group.webservice_log_group_2.name,
-          "awslogs-stream-prefix" = "hv-ecs"
+          "awslogs-stream-prefix" = aws_cloudwatch_log_stream.myapp_log_stream_2.name
         }
       },
       "portMappings" = [
@@ -94,7 +93,6 @@ resource "aws_ecs_service" "backoffice_service" {
 
   network_configuration {
     security_groups  = [aws_security_group.ecs_sg.id]
-    # subnets         = aws_subnet.public.*.id
     subnets         = [aws_subnet.public_1[0].id, aws_subnet.public_2[0].id]
     assign_public_ip = true
   }
@@ -126,7 +124,7 @@ resource "aws_ecs_task_definition" "webservice_td" {
         "options" = {
           "awslogs-region" = var.aws_region,
           "awslogs-group" = aws_cloudwatch_log_group.webservice_log_group_3.name,
-          "awslogs-stream-prefix" = "hv-ecs"
+          "awslogs-stream-prefix" = aws_cloudwatch_log_stream.myapp_log_stream_3.name
         }
       },
       "portMappings" = [
@@ -148,7 +146,6 @@ resource "aws_ecs_service" "webservice_service" {
 
   network_configuration {
     security_groups  = [aws_security_group.ecs_sg.id]
-    # subnets         = aws_subnet.public.*.id
     subnets         = [aws_subnet.public_1[0].id, aws_subnet.public_2[0].id]
     assign_public_ip = true
   }

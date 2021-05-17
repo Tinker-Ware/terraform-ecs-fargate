@@ -4,7 +4,7 @@ data "aws_route53_zone" "selected" {
 
 resource "aws_route53_record" "frontoffice_record" {
   zone_id = data.aws_route53_zone.selected.zone_id
-  name    = "frontoffice.${var.domain}"
+  name    = "${var.subdomain_1}.${var.domain}"
   type    = "A"
 
   alias {
@@ -16,7 +16,7 @@ resource "aws_route53_record" "frontoffice_record" {
 
 resource "aws_route53_record" "backoffice_record" {
   zone_id = data.aws_route53_zone.selected.zone_id
-  name    = "backoffice.${var.domain}"
+  name    = "${var.subdomain_2}.${var.domain}"
   type    = "A"
 
   alias {
@@ -28,7 +28,7 @@ resource "aws_route53_record" "backoffice_record" {
 
 resource "aws_route53_record" "webservice_record" {
   zone_id = data.aws_route53_zone.selected.zone_id
-  name    = "api.${var.domain}"
+  name    = "${var.subdomain_3}.${var.domain}"
   type    = "A"
 
   alias {
