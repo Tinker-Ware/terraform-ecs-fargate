@@ -141,6 +141,8 @@ resource "aws_ecs_service" "webservice_service" {
   name            = "${var.service_name_3}-service"
   cluster         = aws_ecs_cluster.main.id
   task_definition = aws_ecs_task_definition.webservice_td.arn
+  # grace period required only for first execution
+  health_check_grace_period_seconds = 300
   desired_count   = 1
   launch_type     = "FARGATE"
 
