@@ -6,8 +6,9 @@ provider "aws" {
 
 terraform {
   backend "s3" {
+    profile = "default"
     bucket = "tw-tfstate-files"
-    key    = "hv-test/terraform.tfstate"
+    key    = "hv-test/terraform-hv-stage.tfstate"
     region = "us-east-1"
   }
 }
