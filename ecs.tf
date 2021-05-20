@@ -129,8 +129,8 @@ resource "aws_ecs_task_definition" "webservice_td" {
       },
       "portMappings" = [
         {
-          "containerPort" = 80,
-          "hostPort" = 80
+          "containerPort" = 9095,
+          "hostPort" = 9095
         }
       ]
     }
@@ -153,7 +153,7 @@ resource "aws_ecs_service" "webservice_service" {
   load_balancer {
     target_group_arn = aws_alb_target_group.webservice_tg.id
     container_name   = var.service_name_3
-    container_port   = 80
+    container_port   = 9095
   }
 
   depends_on = [aws_alb_listener.redirect_https, aws_alb_listener.hv_lb_https_listener, aws_iam_role_policy_attachment.ecs_task_execution_role]

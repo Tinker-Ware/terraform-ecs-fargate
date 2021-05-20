@@ -37,6 +37,13 @@ resource "aws_security_group" "ecs_sg" {
     security_groups = [aws_security_group.lb.id]
   }
 
+  ingress {
+    protocol        = "tcp"
+    from_port       = 9095
+    to_port         = 9095
+    security_groups = [aws_security_group.lb.id]
+  }
+
   egress {
     protocol    = "-1"
     from_port   = 0
