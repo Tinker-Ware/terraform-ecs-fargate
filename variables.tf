@@ -77,6 +77,11 @@ variable "domain" {
   description = "Domain name for ACM certificate"
 }
 
+variable "db_snapshot_identifier" {
+  type        = string
+  description = "Name of the snapshot to use to create the new DB"
+}
+
 variable "db_version" {
   type        = string
   description = "Engine version for MySQL"
