@@ -146,7 +146,7 @@ resource "aws_ecs_service" "webservice_service" {
 
   network_configuration {
     security_groups  = [aws_security_group.ecs_private_sg.id]
-    subnets         = [aws_subnet.private.id]
+    subnets         = [aws_subnet.private_1.id,aws_subnet.private_2.id]
     assign_public_ip = false
   }
 

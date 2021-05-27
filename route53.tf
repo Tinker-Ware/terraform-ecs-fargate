@@ -26,6 +26,8 @@ resource "aws_route53_record" "backoffice_record" {
   }
 }
 
+
+#service discovery for private services
 resource "aws_service_discovery_private_dns_namespace" "private-dns" {
   name = "${var.domain}"
   vpc = aws_vpc.main.id
