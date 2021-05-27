@@ -129,8 +129,8 @@ resource "aws_ecs_task_definition" "webservice_td" {
       },
       "portMappings" = [
         {
-          "containerPort" = 9095,
-          "hostPort" = 9095
+          "containerPort" = 80,
+          "hostPort" = 80
         }
       ]
     }
@@ -141,21 +141,17 @@ resource "aws_ecs_service" "webservice_service" {
   name            = "${var.service_name_3}-service"
   cluster         = aws_ecs_cluster.main.id
   task_definition = aws_ecs_task_definition.webservice_td.arn
-  # grace period required only for first execution
-  health_check_grace_period_seconds = 300
   desired_count   = 1
   launch_type     = "FARGATE"
 
   network_configuration {
-    security_groups  = [aws_security_group.ecs_sg.id]
-    subnets         = [aws_subnet.public_1[0].id, aws_subnet.public_2[0].id]
-    assign_public_ip = true
+    security_groups  = [aws_security_group.ecs_private_sg.id]
+    subnets         = [aws_subnet.private.id]
+    assign_public_ip = false
   }
 
-  load_balancer {
-    target_group_arn = aws_alb_target_group.webservice_tg.id
-    container_name   = var.service_name_3
-    container_port   = 9095
+  service_registries {
+    registry_arn = aws_service_discovery_service.webservices-discovery.arn
   }
 
   depends_on = [aws_alb_listener.redirect_https, aws_alb_listener.hv_lb_https_listener, aws_iam_role_policy_attachment.ecs_task_execution_role]
