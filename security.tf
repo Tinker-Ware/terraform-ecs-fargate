@@ -27,7 +27,7 @@ resource "aws_security_group" "lb" {
 
 # Traffic to the ECS cluster should only come from the ALB
 resource "aws_security_group" "ecs_sg" {
-  name        = "ecs-tasks-security-group"
+  name        = "${var.cluster_name}-ecs-tasks-sg"
   vpc_id      = aws_vpc.main.id
 
   ingress {
@@ -42,6 +42,13 @@ resource "aws_security_group" "ecs_sg" {
     from_port       = 9095
     to_port         = 9095
     security_groups = [aws_security_group.lb.id]
+  }
+
+  ingress {
+    protocol        = "tcp"
+    from_port       = var.db_port
+    to_port         = var.db_port
+    cidr_blocks     = [aws_subnet.public_1[0].cidr_block, aws_subnet.public_2[0].cidr_block]
   }
 
   egress {
