@@ -49,7 +49,7 @@ resource "aws_alb_target_group" "backoffice_tg" {
 # App 3
 resource "aws_alb_target_group" "webservice_tg" {
   name        = "${var.service_name_3}-tg"
-  port        = 80
+  port        = 9095
   protocol    = "HTTP"
   vpc_id      = aws_vpc.main.id
   target_type = "ip"
