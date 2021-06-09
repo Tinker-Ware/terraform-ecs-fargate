@@ -139,3 +139,57 @@ resource "aws_lb_listener_rule" "backoffice_routing_rule" {
 
   depends_on = [aws_alb_listener.hv_lb_https_listener]
 }
+
+### private alb
+resource "aws_alb" "internal_alb" {
+  name            = "${var.cluster_name}-internal-lb"
+  subnets         = [aws_subnet.private_1.id,aws_subnet.private_2.id]
+  security_groups = [aws_security_group.internal_alb_sg.id]
+  internal        = true
+}
+
+resource "aws_alb_target_group" "webservice_tg" {
+  name        = "${var.service_name_3}-tg"
+  port        = 9095
+  protocol    = "HTTP"
+  vpc_id      = aws_vpc.main.id
+  target_type = "ip"
+
+  health_check {
+    healthy_threshold   = "5"
+    interval            = "30"
+    protocol            = "HTTP"
+    matcher             = "200"
+    timeout             = "5"
+    path                = "/"
+    unhealthy_threshold = "2"
+  }
+}
+
+resource "aws_alb_listener" "redirect_internal_https" {
+  load_balancer_arn = aws_alb.internal_alb.arn
+  port              = "80"
+  protocol          = "HTTP"
+
+  default_action {
+    type = "redirect"
+
+    redirect {
+      port        = "443"
+      protocol    = "HTTPS"
+      status_code = "HTTP_301"
+    }
+  }
+}
+
+resource "aws_alb_listener" "internal_alb_listener" {
+  load_balancer_arn = aws_alb.internal_alb.arn
+  port              = 443
+  protocol          = "HTTPS"
+  certificate_arn   = data.aws_acm_certificate.hv_cert.arn
+
+  default_action {
+    target_group_arn = aws_alb_target_group.webservice_tg.arn
+    type             = "forward"
+  }
+}
