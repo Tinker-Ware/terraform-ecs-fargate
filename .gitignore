@@ -8,6 +8,7 @@
 
 # Terraform variables
 *.tfvars
+!variable_values.tfvars
 
 # Extra
 .terraform.lock*
