@@ -45,8 +45,10 @@ resource "aws_security_group" "ecs_sg" {
   }
 }
 
+
+################################################
 resource "aws_security_group" "internal_alb_sg" {
-  name        = "internal-alb-security-group"
+  name        = "${var.cluster_name}-internal-alb-security-group"
   vpc_id      = aws_vpc.main.id
 
   ingress {
@@ -55,7 +57,6 @@ resource "aws_security_group" "internal_alb_sg" {
     to_port         = 0
     security_groups = [aws_security_group.ecs_sg.id]
   }
-
 
   egress {
     protocol    = "-1"
@@ -67,7 +68,7 @@ resource "aws_security_group" "internal_alb_sg" {
 
 
 resource "aws_security_group" "ecs_private_sg" {
-  name        = "ecs-tasks-private-security-group"
+  name        = "${var.cluster_name}-ecs-tasks-private-sg"
   vpc_id      = aws_vpc.main.id
 
   ingress {

@@ -143,7 +143,8 @@ resource "aws_ecs_service" "webservice_service" {
   task_definition = aws_ecs_task_definition.webservice_td.arn
   desired_count   = 1
   launch_type     = "FARGATE"
-
+  health_check_grace_period_seconds = 60
+  
   network_configuration {
     security_groups  = [aws_security_group.ecs_private_sg.id]
     subnets         = [aws_subnet.private_1.id,aws_subnet.private_2.id]
@@ -155,10 +156,6 @@ resource "aws_ecs_service" "webservice_service" {
     container_name   = var.service_name_3
     container_port   = 9095
   }
-
-  # service_registries {
-  #   registry_arn = aws_service_discovery_service.webservices-discovery.arn
-  # }
 
   depends_on = [aws_alb_listener.redirect_internal_https, aws_alb_listener.hv_lb_https_listener, aws_iam_role_policy_attachment.ecs_task_execution_role]
 }

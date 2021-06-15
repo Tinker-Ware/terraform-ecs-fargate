@@ -5,7 +5,7 @@ data "aws_acm_certificate" "hv_cert" {
 
 resource "aws_alb" "main" {
   name            = "${var.cluster_name}-lb"
-  subnets         = [aws_subnet.public_1[0].id, aws_subnet.public_2[0].id,aws_subnet.private_1.id,aws_subnet.private_2.id] #test if the private subnets are necesary
+  subnets         = [aws_subnet.public_1[0].id, aws_subnet.public_2[0].id] 
   security_groups = [aws_security_group.lb.id]
 }
 
@@ -146,6 +146,7 @@ resource "aws_alb" "internal_alb" {
   subnets         = [aws_subnet.private_1.id,aws_subnet.private_2.id]
   security_groups = [aws_security_group.internal_alb_sg.id]
   internal        = true
+
 }
 
 resource "aws_alb_target_group" "webservice_tg" {
@@ -159,7 +160,7 @@ resource "aws_alb_target_group" "webservice_tg" {
     healthy_threshold   = "5"
     interval            = "30"
     protocol            = "HTTP"
-    matcher             = "200"
+    matcher             = "200,404"
     timeout             = "5"
     path                = "/"
     unhealthy_threshold = "2"
@@ -192,4 +193,22 @@ resource "aws_alb_listener" "internal_alb_listener" {
     target_group_arn = aws_alb_target_group.webservice_tg.arn
     type             = "forward"
   }
+}
+
+resource "aws_lb_listener_rule" "webservice_routing_rule" {
+  listener_arn = aws_alb_listener.internal_alb_listener.arn
+  priority     = 1
+
+  action {
+    type             = "forward"
+    target_group_arn = aws_alb_target_group.webservice_tg.arn
+  }
+
+  condition {
+    host_header {
+      values = ["${var.subdomain_3}.${var.domain}"]
+    }
+  }
+
+  depends_on = [aws_alb_listener.internal_alb_listener]
 }
