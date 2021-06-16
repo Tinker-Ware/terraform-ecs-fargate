@@ -25,9 +25,9 @@ resource "aws_subnet" "public_2" {
   map_public_ip_on_launch = true
 }
 
-resource "aws_db_subnet_group" "public_subnet_group" {
+resource "aws_db_subnet_group" "subnet_group" {
   name       = "${var.cluster_name}-subnet-group"
-  subnet_ids = [aws_subnet.public_1[0].id, aws_subnet.public_2[0].id]
+  subnet_ids = [aws_subnet.private_1.id, aws_subnet.private_2.id]
 
   tags = {
     Name = "${var.cluster_name} public subnet group"
@@ -45,6 +45,7 @@ resource "aws_subnet" "private_2" {
   vpc_id                  = aws_vpc.main.id
   cidr_block              = "10.0.5.0/24"
   availability_zone       = "us-east-1b"
+
   map_public_ip_on_launch = false
 }
 

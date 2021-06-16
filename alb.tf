@@ -46,6 +46,26 @@ resource "aws_alb_target_group" "backoffice_tg" {
   }
 }
 
+
+# App 3
+resource "aws_alb_target_group" "webservice_tg" {
+  name        = "${var.service_name_3}-tg"
+  port        = 9095
+  protocol    = "HTTP"
+  vpc_id      = aws_vpc.main.id
+  target_type = "ip"
+
+  health_check {
+    healthy_threshold   = "5"
+    interval            = "30"
+    protocol            = "HTTP"
+    matcher             = "200,404"
+    timeout             = "5"
+    path                = "/"
+    unhealthy_threshold = "2"
+  }
+}
+
 resource "aws_alb_listener" "redirect_https" {
   load_balancer_arn = aws_alb.main.arn
   port              = "80"

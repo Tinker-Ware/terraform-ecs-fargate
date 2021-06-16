@@ -8,8 +8,8 @@ resource "aws_appautoscaling_target" "autoscaling_target_frontoffice" {
   depends_on = [aws_ecs_service.frontoffice_service]
 }
 
-resource "aws_appautoscaling_policy" "frontoffice_up" {
-  name               = "${var.service_name_1}_scale_up"
+resource "aws_appautoscaling_policy" "frontoffice_policy_cpu_up" {
+  name               = "${var.service_name_1}_cpu_scale_up"
   service_namespace  = "ecs"
   resource_id        = "service/${var.cluster_name}/${var.service_name_1}-service"
   scalable_dimension = "ecs:service:DesiredCount"
@@ -28,8 +28,8 @@ resource "aws_appautoscaling_policy" "frontoffice_up" {
   depends_on = [aws_appautoscaling_target.autoscaling_target_frontoffice]
 }
 
-resource "aws_appautoscaling_policy" "frontoffice_down" {
-  name               = "${var.service_name_1}_scale_down"
+resource "aws_appautoscaling_policy" "frontoffice_policy_cpu_down" {
+  name               = "${var.service_name_1}_cpu_scale_down"
   service_namespace  = "ecs"
   resource_id        = "service/${var.cluster_name}/${var.service_name_1}-service"
   scalable_dimension = "ecs:service:DesiredCount"
@@ -50,7 +50,7 @@ resource "aws_appautoscaling_policy" "frontoffice_down" {
 
 # CPU
 resource "aws_cloudwatch_metric_alarm" "frontoffice_cpu_high" {
-  alarm_name          = "80-cpu-3min-avg-scaleout"
+  alarm_name          = "${var.service_name_1}-80-cpu-3min-avg-scaleout"
   comparison_operator = "GreaterThanOrEqualToThreshold"
   evaluation_periods  = "3"
   metric_name         = "CPUUtilization"
@@ -64,11 +64,11 @@ resource "aws_cloudwatch_metric_alarm" "frontoffice_cpu_high" {
     ServiceName = aws_ecs_service.frontoffice_service.name
   }
 
-  alarm_actions = [aws_appautoscaling_policy.frontoffice_up.arn]
+  alarm_actions = [aws_appautoscaling_policy.frontoffice_policy_cpu_up.arn]
 }
 
 resource "aws_cloudwatch_metric_alarm" "frontoffice_cpu_low" {
-  alarm_name          = "40-cpu-3min-avg-scalein"
+  alarm_name          = "${var.service_name_1}-40-cpu-3min-avg-scalein"
   comparison_operator = "LessThanOrEqualToThreshold"
   evaluation_periods  = "3"
   metric_name         = "CPUUtilization"
@@ -82,13 +82,54 @@ resource "aws_cloudwatch_metric_alarm" "frontoffice_cpu_low" {
     ServiceName = aws_ecs_service.frontoffice_service.name
   }
 
-  alarm_actions = [aws_appautoscaling_policy.frontoffice_down.arn]
+  alarm_actions = [aws_appautoscaling_policy.frontoffice_policy_cpu_down.arn]
 }
 
 
 # RAM
+resource "aws_appautoscaling_policy" "frontoffice_policy_ram_up" {
+  name               = "${var.service_name_1}_ram_scale_up"
+  service_namespace  = "ecs"
+  resource_id        = "service/${var.cluster_name}/${var.service_name_1}-service"
+  scalable_dimension = "ecs:service:DesiredCount"
+
+  step_scaling_policy_configuration {
+    adjustment_type         = "ChangeInCapacity"
+    cooldown                = 180
+    metric_aggregation_type = "Maximum"
+
+    step_adjustment {
+      metric_interval_lower_bound = 0
+      scaling_adjustment          = 1
+    }
+  }
+
+  depends_on = [aws_appautoscaling_target.autoscaling_target_frontoffice]
+}
+
+resource "aws_appautoscaling_policy" "frontoffice_policy_ram_down" {
+  name               = "${var.service_name_1}_ram_scale_down"
+  service_namespace  = "ecs"
+  resource_id        = "service/${var.cluster_name}/${var.service_name_1}-service"
+  scalable_dimension = "ecs:service:DesiredCount"
+
+  step_scaling_policy_configuration {
+    adjustment_type         = "ChangeInCapacity"
+    cooldown                = 180
+    metric_aggregation_type = "Maximum"
+
+    step_adjustment {
+      metric_interval_upper_bound = 0
+      scaling_adjustment          = -1
+    }
+  }
+
+  depends_on = [aws_appautoscaling_target.autoscaling_target_frontoffice]
+}
+
+
 resource "aws_cloudwatch_metric_alarm" "frontoffice_ram_high" {
-  alarm_name          = "80-ram-3min-avg-scaleout"
+  alarm_name          = "${var.service_name_1}-80-ram-3min-avg-scaleout"
   comparison_operator = "GreaterThanOrEqualToThreshold"
   evaluation_periods  = "3"
   metric_name         = "MemoryUtilization"
@@ -102,11 +143,11 @@ resource "aws_cloudwatch_metric_alarm" "frontoffice_ram_high" {
     ServiceName = aws_ecs_service.frontoffice_service.name
   }
 
-  alarm_actions = [aws_appautoscaling_policy.frontoffice_up.arn]
+  alarm_actions = [aws_appautoscaling_policy.frontoffice_policy_ram_up.arn]
 }
 
 resource "aws_cloudwatch_metric_alarm" "frontoffice_ram_low" {
-  alarm_name          = "40-ram-3min-avg-scalein"
+  alarm_name          = "${var.service_name_1}-40-ram-3min-avg-scalein"
   comparison_operator = "LessThanOrEqualToThreshold"
   evaluation_periods  = "3"
   metric_name         = "MemoryUtilization"
@@ -120,5 +161,5 @@ resource "aws_cloudwatch_metric_alarm" "frontoffice_ram_low" {
     ServiceName = aws_ecs_service.frontoffice_service.name
   }
 
-  alarm_actions = [aws_appautoscaling_policy.frontoffice_down.arn]
+  alarm_actions = [aws_appautoscaling_policy.frontoffice_policy_ram_down.arn]
 }
