@@ -11,7 +11,7 @@ resource "aws_db_instance" "mysql_db" {
   port                = var.db_port
   username            = var.db_user
 
-  vpc_security_group_ids  = [ aws_security_group.ecs_sg.id, aws_security_group.ecs_private_sg.id ]
+  vpc_security_group_ids  = [ aws_security_group.ecs_private_sg.id ]
   publicly_accessible     = false
-  db_subnet_group_name    = aws_db_subnet_group.public_subnet_group.name
+  db_subnet_group_name    = aws_db_subnet_group.subnet_group.name
 }
