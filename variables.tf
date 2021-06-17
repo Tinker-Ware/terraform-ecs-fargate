@@ -77,6 +77,16 @@ variable "domain" {
   description = "Domain name for ACM certificate"
 }
 
+variable "aws_ami_id" {
+  type        = string
+  description = "ID of the Amazon Linux AMI"
+}
+
+variable "key_pair" {
+  type        = string
+  description = "Name of the ssh keys to use to access the instance"
+}
+
 variable "db_snapshot_identifier" {
   type        = string
   description = "Name of the snapshot to use to create the new DB"
