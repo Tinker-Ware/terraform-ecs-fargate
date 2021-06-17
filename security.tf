@@ -37,14 +37,25 @@ resource "aws_security_group" "ecs_sg" {
     security_groups = [aws_security_group.lb.id]
   }
 
-  ingress {
-    protocol        = "tcp"
-    from_port       = 9095
-    to_port         = 9095
-    security_groups = [aws_security_group.lb.id]
+  egress {
+    protocol    = "-1"
+    from_port   = 0
+    to_port     = 0
+    cidr_blocks = ["0.0.0.0/0"]
   }
+}
+
+resource "aws_security_group" "ecs_private_sg" {
+  name        = "ecs-tasks-private-security-group"
+  vpc_id      = aws_vpc.main.id
 
   ingress {
+    protocol        = "-1"
+    from_port       = 0
+    to_port         = 0
+    security_groups = [aws_security_group.ecs_sg.id]
+  }
+   ingress {
     protocol        = "tcp"
     from_port       = var.db_port
     to_port         = var.db_port
@@ -66,6 +77,19 @@ resource "aws_security_group" "ecs_sg" {
   }
 }
 
+#bd security group
+resource "aws_security_group" "bd_sg" {
+  name        = "mysql-database-security-group"
+  vpc_id      = aws_vpc.main.id
+
+  ingress {
+    protocol        = "-1"
+    from_port       = 0
+    to_port         = 0
+    security_groups = [aws_security_group.ecs_private_sg.id]
+  }
+  
+
 
 resource "aws_security_group" "bastion_sg" {
   name = "${var.cluster_name}-bastion-sg"
@@ -77,7 +101,7 @@ resource "aws_security_group" "bastion_sg" {
     to_port = 22
     cidr_blocks = ["0.0.0.0/0"]
   }
-
+  
   egress {
     protocol    = "-1"
     from_port   = 0
