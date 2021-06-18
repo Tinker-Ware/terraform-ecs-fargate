@@ -49,3 +49,62 @@ resource "aws_service_discovery_service" "webservices-discovery" {
     failure_threshold = 5
   }
 }
+
+#app mesh virtual node
+resource "aws_appmesh_mesh" "private_subnet_mesh" {
+  name = "private_subnet_mesh"
+}
+
+# resource "aws_service_discovery_http_namespace" "webservice_endpoint" {
+#   name = "${var.domain}"
+# }
+
+resource "aws_appmesh_virtual_service" "webservice_vs" {
+  name      = "api-stage-vs"
+  mesh_name = aws_appmesh_mesh.private_subnet_mesh.id
+
+  spec {
+    provider {
+      virtual_node {
+        virtual_node_name = aws_appmesh_virtual_node.webservice-vn.name
+      }
+    }
+  }
+}
+
+resource "aws_appmesh_virtual_node" "webservice-vn" {
+  name      = "${var.service_name_3}"
+  mesh_name = aws_appmesh_mesh.private_subnet_mesh.id
+
+  spec {
+    backend {
+      virtual_service {
+        virtual_service_name = "api-stage-vs"
+        client_policy {
+          tls {
+            validation{
+              trust {
+                acm {
+                  certificate_authority_arns = [data.aws_acm_certificate.hv_cert.arn]
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+
+    listener {
+      port_mapping {
+        port     = 9095
+        protocol = "http"
+      }
+    }
+
+    service_discovery {
+      dns {
+          hostname = "${var.subdomain_3}.${var.domain}"
+        }  
+    }
+  }
+}

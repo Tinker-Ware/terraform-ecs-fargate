@@ -129,8 +129,8 @@ resource "aws_ecs_task_definition" "webservice_td" {
       },
       "portMappings" = [
         {
-          "containerPort" = 80,
-          "hostPort" = 80
+          "containerPort" = 9095,
+          "hostPort" = 9095
         }
       ]
     }

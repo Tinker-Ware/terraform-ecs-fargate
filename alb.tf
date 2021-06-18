@@ -5,7 +5,7 @@ data "aws_acm_certificate" "hv_cert" {
 
 resource "aws_alb" "main" {
   name            = "${var.cluster_name}-lb"
-  subnets         = [aws_subnet.public_1[0].id, aws_subnet.public_2[0].id,aws_subnet.private_1.id,aws_subnet.private_2.id] #test if the private subnets are necesary
+  subnets         = [aws_subnet.public_1[0].id, aws_subnet.public_2[0].id]
   security_groups = [aws_security_group.lb.id]
 }
 
