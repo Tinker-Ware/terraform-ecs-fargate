@@ -59,7 +59,7 @@ resource "aws_security_group" "ecs_private_sg" {
     protocol        = "tcp"
     from_port       = var.db_port
     to_port         = var.db_port
-    cidr_blocks     = [aws_subnet.public_1[0].cidr_block, aws_subnet.public_2[0].cidr_block]
+    cidr_blocks     = [aws_subnet.public_1[0].cidr_block, aws_subnet.public_2[0].cidr_block,aws_subnet.private_1.cidr_block,aws_subnet.private_2.cidr_block]
   }
 
   ingress {
@@ -89,7 +89,7 @@ resource "aws_security_group" "bd_sg" {
     security_groups = [aws_security_group.ecs_private_sg.id]
   }
   
-
+}
 
 resource "aws_security_group" "bastion_sg" {
   name = "${var.cluster_name}-bastion-sg"

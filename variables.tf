@@ -87,10 +87,10 @@ variable "key_pair" {
   description = "Name of the ssh keys to use to access the instance"
 }
 
-variable "db_snapshot_identifier" {
-  type        = string
-  description = "Name of the snapshot to use to create the new DB"
-}
+# variable "db_snapshot_identifier" {
+#   type        = string
+#   description = "Name of the snapshot to use to create the new DB"
+# }
 
 variable "db_version" {
   type        = string
