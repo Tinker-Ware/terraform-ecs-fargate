@@ -4,11 +4,12 @@ resource "aws_api_gateway_vpc_link" "vpc_link" {
 }
 
 
-resource "aws_api_gateway_authorizer" "rest-api-auth" {
-  name                   = "rest-api-auth"
+resource "aws_api_gateway_authorizer" "hv-api-authorizer" {
+  name                   = "hv-api-authorizer"
   rest_api_id            = aws_api_gateway_rest_api.rest_api.id
   authorizer_uri         = aws_lambda_function.authorizer.invoke_arn
   authorizer_credentials = aws_iam_role.invocation_role.arn
+  type = "REQUEST"
 }
 
 
@@ -75,12 +76,53 @@ resource "aws_lambda_function" "authorizer" {
   filename      = "hv-apigw-python-authorizer.zip"
   function_name = "hv-api-authorizer"
   role          = aws_iam_role.lambda.arn
-  handler       = "hv-apigw-python-authorizer.lambda_function"
+  handler       = "hv-api-authorizer.lambda_function"
   runtime       = "python3.8"
 
   source_code_hash = filebase64sha256("hv-apigw-python-authorizer.zip")
+
+  depends_on = [
+    aws_iam_role_policy_attachment.lambda_logs,
+    aws_cloudwatch_log_group.hv-api-lg,
+  ]
 }
 
+
+# This is to optionally manage the CloudWatch Log Group for the Lambda Function.
+# If skipping this resource configuration, also add "logs:CreateLogGroup" to the IAM policy below.
+resource "aws_cloudwatch_log_group" "hv-api-lg" {
+  name              = "/aws/lambda/hv-api-authorizer"
+  retention_in_days = 14
+}
+
+# See also the following AWS managed policy: AWSLambdaBasicExecutionRole
+resource "aws_iam_policy" "lambda_logging" {
+  name        = "lambda_logging"
+  path        = "/"
+  description = "IAM policy for logging from a lambda"
+
+  policy = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Action": [
+        "logs:CreateLogGroup",
+        "logs:CreateLogStream",
+        "logs:PutLogEvents"
+      ],
+      "Resource": "arn:aws:logs:*:*:*",
+      "Effect": "Allow"
+    }
+  ]
+}
+EOF
+}
+
+resource "aws_iam_role_policy_attachment" "lambda_logs" {
+  role       = aws_iam_role.lambda.name
+  policy_arn = aws_iam_policy.lambda_logging.arn
+}
 
 
 
@@ -126,7 +168,7 @@ resource "aws_api_gateway_rest_api" "rest_api" {
           }
         },
         "security" : [ {
-          "hv-api-authorizer" : [ ]
+         "${aws_lambda_function.authorizer.function_name}" : [ ]
         } ],
         "x-amazon-apigateway-integration" : {
           "responses" : {
@@ -157,7 +199,7 @@ resource "aws_api_gateway_rest_api" "rest_api" {
           }
         },
         "security" : [ {
-          "hv-api-authorizer" : [ ]
+           "${aws_lambda_function.authorizer.function_name}" : [ ]
         } ],
         "x-amazon-apigateway-integration" : {
           "connectionId" : aws_api_gateway_vpc_link.vpc_link.id,
@@ -251,19 +293,19 @@ resource "aws_api_gateway_rest_api" "rest_api" {
       }
     }
   },
-  "securityDefinitions" : {
-    "hv-api-authorizer" : {
-      "type" : "apiKey",
-      "name" : "Unused",
-      "in" : "header",
-      "x-amazon-apigateway-authtype" : "custom",
-      "x-amazon-apigateway-authorizer" : {
-        "authorizerUri" : "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:445822713320:function:hv-apigw-python-authorizer/invocations",
-        "authorizerResultTtlInSeconds" : 0,
-        "type" : "request"
-      }
-    }
-  },
+  # "securityDefinitions" : {
+  #   "${aws_lambda_function.authorizer.function_name}" : {
+  #     "type" : "apiKey",
+  #     "name" : "Unused",
+  #     "in" : "header",
+  #     "x-amazon-apigateway-authtype" : "custom",
+  #     "x-amazon-apigateway-authorizer" : {
+  #       "authorizerUri" : "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:445822713320:function:${aws_lambda_function.authorizer.function_name}/invocations",
+  #       "authorizerResultTtlInSeconds" : 0,
+  #       "type" : "request"
+  #     }
+  #   }
+  # },
   "definitions" : {
     "Empty" : {
       "type" : "object",

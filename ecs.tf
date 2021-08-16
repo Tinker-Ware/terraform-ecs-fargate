@@ -143,13 +143,20 @@ resource "aws_ecs_service" "webservice_service" {
   task_definition = aws_ecs_task_definition.webservice_td.arn
   desired_count   = 1
   launch_type     = "FARGATE"
+  health_check_grace_period_seconds = 300
+
 
   network_configuration {
     security_groups  = [aws_security_group.ecs_private_sg.id]
     subnets         = [aws_subnet.private_1.id,aws_subnet.private_2.id]
     assign_public_ip = false
   }
-
+   load_balancer {
+    target_group_arn = aws_lb_target_group.webservice_tg.id
+    container_name   = var.service_name_3
+    container_port   = 80
+    
+  }
   service_registries {
     registry_arn = aws_service_discovery_service.webservices-discovery.arn
   }
