@@ -48,7 +48,12 @@ resource "aws_security_group" "ecs_sg" {
 resource "aws_security_group" "ecs_private_sg" {
   name        = "ecs-tasks-private-security-group"
   vpc_id      = aws_vpc.main.id
-
+  ingress {
+    protocol    = "-1"
+    from_port   = 0
+    to_port     = 0
+    cidr_blocks = ["0.0.0.0/0"]
+  }
   ingress {
     protocol        = "-1"
     from_port       = 0

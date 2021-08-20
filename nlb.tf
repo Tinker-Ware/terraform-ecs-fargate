@@ -8,11 +8,13 @@ resource "aws_lb" "private_nlb" {
 resource "aws_lb_target_group" "webservice_tg" {
   name        = "${var.service_name_3}-tg"
   port        = 80
-  protocol    = "TLS"
+  protocol    = "TCP"
   vpc_id      = aws_vpc.main.id
   target_type = "ip"
   
-  
+  depends_on = [
+    aws_lb.private_nlb
+  ]
 }
 
 # resource "aws_lb_target_group_attachment" "webservice_tg_attach" {
@@ -33,9 +35,9 @@ resource "aws_lb_target_group" "webservice_tg" {
 
 resource "aws_alb_listener" "hv_nlb_https_listener" {
   load_balancer_arn = aws_lb.private_nlb.arn
-  port              = 443
-  protocol          = "TLS"
-  certificate_arn   = data.aws_acm_certificate.hv_cert.arn
+  port              = 80
+  protocol          = "TCP"
+  #certificate_arn   = data.aws_acm_certificate.hv_cert.arn
 
   default_action {
     type             = "forward"
