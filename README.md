@@ -24,3 +24,7 @@ Then inside the EC2 instance you will connect to the DB with a command like this
 ```sh
 mysql -u XXX -h hv-stage-db.cviobqjmbuxe.us-east-1.rds.amazonaws.com --port XXXX -p
 ```
+
+## Notes
+theres a bug with the api gateway authorizer where the lambda doesn't get its trigger added after the deployment.
+to fix it you need to go to the api gateway in the AWS console, in the authorizers section, click edit and then save in the authorizer, that should be enough to fix it.

@@ -40,3 +40,10 @@ resource "aws_cloudwatch_log_stream" "api_authorizer_log_stream" {
   name           = "api-authorizer-logstream"
   log_group_name = aws_cloudwatch_log_group.api_authorizer_log_group.name
 }
+
+resource "aws_cloudwatch_log_group" "hv-api-lg" {
+  name              = "/aws/lambda/hv-api-authorizer"
+  retention_in_days = 14
+}
+
+
