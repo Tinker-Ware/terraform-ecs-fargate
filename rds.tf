@@ -10,7 +10,7 @@ resource "aws_db_instance" "mysql_db" {
   storage_encrypted   = false
   port                = var.db_port
   username            = var.db_user
-  vpc_security_group_ids  = [ aws_security_group.ecs_sg.id ]
+  vpc_security_group_ids  = [ aws_security_group.bd_sg.id ]
 
   publicly_accessible     = false
   db_subnet_group_name    = aws_db_subnet_group.public_subnet_group.name

@@ -25,6 +25,14 @@ Then inside the EC2 instance you will connect to the DB with a command like this
 mysql -u XXX -h hv-stage-db.cviobqjmbuxe.us-east-1.rds.amazonaws.com --port XXXX -p
 ```
 
-## Notes
-theres a bug with the api gateway authorizer where the lambda doesn't get its trigger added after the deployment.
-to fix it you need to go to the api gateway in the AWS console, in the authorizers section, click edit and then save in the authorizer, that should be enough to fix it.
+## Deploy Notes
+- ensure webservice is exposing and listening in por 80
+- apply terraform
+- build/deploy webservice
+- in the aws console in the section:
+ `api gateway > hv-vpc-api > authorizers > hv-api-authorizer`
+  click edit and save, this adds the trigger to the lambda authorizer
+- deploy `stage` in api gateway
+- update endpoints on fronoffice and backoffice
+  - if you didn't update endpoint on frontoffice endpoint, deploy public webservice
+- deploy clinical history backend pointing to new private service discovery url ej. http://stage-api...
